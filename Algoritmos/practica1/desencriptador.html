@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Class 1</title>
+        <style>
+            .content{
+                text-align: center;
+            }
+            .content div{
+                display:inline-block;
+                width:40%;
+            }
+            .text-area{
+                width:90%;
+                height:500px;
+            }
+        </style>
+        <script>
+            var codigo = "El veloz murciélago hindú comía feliz cardillo y kiwi cuando la cigüeña tocaba el saxofón detrás del palenque de paja";
+            function desencriptar(){
+                var textOrigin = document.getElementById("textarea-origin").value;
+                var paragraphs = textOrigin.split("\n\n"); 
+                var codigoSplit = codigo.split(" ");
+                document.getElementById("textarea-target").value = "";
+                if(Array.isArray( paragraphs ) ){
+                    for( var i=0; i<paragraphs.length; i++ ){
+                        itParagraph = paragraphs[ i ].replace(/\n/g, " ");
+                        if(itParagraph.length > 0 ){
+                            var output = "NO SE ENCONTRÓ SOLUCIÓN";
+                            //SEPARA EL PARRAFO EN PALABRAS
+                            var words = itParagraph.split(" ");
+                            //BUSCA EL CÓDIGO DE DESENCRIPTACIÓN
+                            for( var j=0; j<words.length; j++ ){
+                                itWord = words[ j ];
+                                if( itWord.length == codigoSplit[ 0 ].length ){
+                                    if( isTheCode( words.slice( j, j+codigoSplit.length), codigoSplit ) ) {
+                                        var encryptedCode = (words.slice( j, j+codigoSplit.length, codigoSplit )).join(" ");
+                                        var desencryptedJSON = getMapDesencrypt( codigo, encryptedCode );
+                                        output = changeChars( itParagraph.replace( encryptedCode, ""), desencryptedJSON );
+                                        break;
+                                    }
+                                }
+                            }
+                            document.getElementById("textarea-target").value += output+"\n\n";
+                        }
+                    }
+                } 
+            }
+            function changeChars( paragraph, desencryptedJSON ){
+                paragraph = paragraph.toUpperCase();
+                var result = "";
+                for( var i=0; i< paragraph.length; i++ ){
+                    result += desencryptedJSON[ paragraph[ i ] ];
+                }
+                return result;
+            }
+
+            function getMapDesencrypt( code, encryptedCode ){
+                code = code.toUpperCase();
+                encryptedCode = encryptedCode.toUpperCase();
+
+                var desencryptedJSON = {};
+                for( var i=0; i<encryptedCode.length; i++ ){
+                    desencryptedJSON[ encryptedCode[ i ] ] =  code[ i ];
+                }
+                return desencryptedJSON;
+            }
+
+            function isTheCode( compareTextSplit, codeSplit ){
+                if( ( compareTextSplit.join ).length !=  ( codeSplit.join ).length ){
+                    return false;
+                }
+                var changeE = null;
+                for( var i=0; i<codeSplit.length; i++ ){
+                    if( compareTextSplit[ i ].length != codeSplit[ i ].length ){
+                        return false;
+                    }else{
+                        var itWord = compareTextSplit[ i ].toUpperCase();
+                        var itCodeWord = codeSplit[ i ].toUpperCase();
+                        if( itCodeWord.includes("E") ){
+                            if ( changeE === null ){
+                                changeE = itWord.charAt( itCodeWord.indexOf("E") );
+                            }else if( changeE !== itWord.charAt( itCodeWord.indexOf("E") ) ){
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
+        </script>
+    </head>
+    <body>
+        <header>
+            <h1>Diseño de algoritmos</h1>
+            <h3>Práctica 1</h3>
+        </header>
+        <div class="content">
+            
+            <div>
+                <textarea class="text-area" id="textarea-origin"></textarea>
+            </div>
+            <button onclick="desencriptar()" id="btn-form" type="button">Ver mensaje!</button>
+            <div>
+                <textarea class="text-area" id="textarea-target"></textarea>
+            </div>
+        </div>
+    </body>
+</html>
